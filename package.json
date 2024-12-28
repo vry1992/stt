@@ -10,12 +10,14 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
-    "nodejs-whisper": "^0.1.18"
+    "nodejs-whisper": "^0.1.18",
+    "wavefile": "^11.0.0"
   },
   "devDependencies": {
     "@types/node": "^22.0.0",
-		"nodemon": "3.1.9",
-		"ts-node": "^10.8.2",
-		"typescript": "^5.1.6"
+    "nodemon": "3.1.9",
+    "patch-package": "^8.0.0",
+    "ts-node": "^10.8.2",
+    "typescript": "^5.1.6"
   }
 }
