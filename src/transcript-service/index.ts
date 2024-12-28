@@ -3,15 +3,15 @@ import { nodewhisper } from 'nodejs-whisper'
 import { MODELS_ENUM } from '../enums';
 
 const DEFAULT_OPTIONS = {
-    modelName: MODELS_ENUM.BASE, //Downloaded models name
-    autoDownloadModelName: MODELS_ENUM.BASE, // (optional) autodownload a model if model is not present
+    modelName: MODELS_ENUM.LARGE_V1, //Downloaded models name
+    autoDownloadModelName: MODELS_ENUM.LARGE_V1, // (optional) autodownload a model if model is not present
     //     verbose?: boolean
-    // removeWavFileAfterTranscription?: boolean
+    removeWavFileAfterTranscription: true,
     // withCuda?: boolean // (optional) use cuda for faster processing
     whisperOptions: {
         outputInText: false, // get output result in txt file
         outputInVtt: false, // get output result in vtt file
-        outputInSrt: true, // get output result in srt file
+        outputInSrt: false, // get output result in srt file
         outputInCsv: false, // get output result in csv file
         translateToEnglish: false, //translate from source language to english
         language: 'ru', // source language
