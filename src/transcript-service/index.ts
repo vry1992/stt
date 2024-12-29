@@ -1,13 +1,12 @@
-import path from 'path'
 import { nodewhisper } from 'nodejs-whisper'
 import { MODELS_ENUM } from '../enums';
 
-const DEFAULT_OPTIONS = {
+export const DEFAULT_OPTIONS = {
     modelName: MODELS_ENUM.LARGE_V1, //Downloaded models name
     autoDownloadModelName: MODELS_ENUM.LARGE_V1, // (optional) autodownload a model if model is not present
-    //     verbose?: boolean
+    verbose: false,
     removeWavFileAfterTranscription: true,
-    // withCuda?: boolean // (optional) use cuda for faster processing
+    withCuda: false, // (optional) use cuda for faster processing
     whisperOptions: {
         outputInText: false, // get output result in txt file
         outputInVtt: false, // get output result in vtt file
@@ -21,7 +20,9 @@ const DEFAULT_OPTIONS = {
     },
 }
 
-const transcript = (filePath: string, options = DEFAULT_OPTIONS) => {
+type OptType = typeof DEFAULT_OPTIONS
+
+const transcript = (filePath: string, options: OptType = DEFAULT_OPTIONS): Promise<string> => {
     return nodewhisper(filePath, options)
 }
 

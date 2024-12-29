@@ -1,5 +1,6 @@
-import { TranscriptService } from "../transcript-service";
+import { DEFAULT_OPTIONS, TranscriptService } from "../transcript-service";
 import { WavService } from "../wav-service";
+import { spawn } from 'child_process';
 
 const express = require('express')
 const path = require('path')
@@ -20,47 +21,58 @@ const storage = multer.diskStorage({
         cb(null, uploadPath);
     },
     filename: (req, file, cb) => {
-        // Save the file with its original name
         cb(null, file.originalname);
     },
 });
 
-// Initialize Multer middleware
 const upload = multer({ storage });
 
-console.log(upload)
-
-// Endpoint to handle file uploads
 app.post('/', upload.array('audio', 2), async (req, res) => {
     try {
         const files = req.files; // Access uploaded files
 
-        if (!files || files.length < 2) {
-            return res.status(400).json({ error: 'Please upload exactly two files' });
+        if (!files) {
+            return res.status(400).json({ error: 'Please upload at least one file' });
+        }
+
+        let options = DEFAULT_OPTIONS;
+
+        const withCuda = req.body.gpu === 'true';
+
+        if (withCuda) {
+            options = {
+                ...DEFAULT_OPTIONS,
+                withCuda
+            }
         }
 
         let result = []
 
         const [first, second] = files;
 
-        const firstPath = path.resolve(__dirname, `./uploads/${first.originalname}`);
-        const secondPath = path.resolve(__dirname, `./uploads/${second.originalname}`);
+        if (first) {
+            const firstPath = path.resolve(__dirname, `./uploads/${first.originalname}`);
+            WavService.normalizeWavFile(firstPath);
+            const firstTranscribingResult = await TranscriptService.transcript(firstPath, options);
+            result[0] = firstTranscribingResult;
+        }
 
-        WavService.normalizeWavFile(firstPath);
-        WavService.normalizeWavFile(secondPath);
-
-        console.log(path.resolve(__dirname, `./uploads/${first.originalname}`))
-
-        const a = await TranscriptService.transcript(firstPath);
-        const b = await TranscriptService.transcript(secondPath);
-        result[0] = a;
-        result[1] = b;
+        if (second) {
+            const secondPath = path.resolve(__dirname, `./uploads/${second.originalname}`);
+            WavService.normalizeWavFile(secondPath);
+            const secondTranscribingResult = await TranscriptService.transcript(secondPath, options);
+            result[1] = secondTranscribingResult;
+        }
 
         res.status(200).json(result);
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: 'Error processing files' });
     }
+});
+
+app.get('/restart', (req, res) => {
+    res.json({ok: 'OK'})
 });
 
 export const listen = () => {
