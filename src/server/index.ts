@@ -1,6 +1,6 @@
 import { DEFAULT_OPTIONS, TranscriptService } from "../transcript-service";
 import { WavService } from "../wav-service";
-import { spawn } from 'child_process';
+import { exec } from 'child_process';
 
 const express = require('express')
 const path = require('path')
@@ -72,7 +72,23 @@ app.post('/', upload.array('audio', 2), async (req, res) => {
 });
 
 app.get('/restart', (req, res) => {
-    res.json({ok: 'OK'})
+    const batchFilePath = path.join(__dirname, 'killer.bat');
+
+  // Execute the batch file
+  exec(batchFilePath, (error, stdout, stderr) => {
+    if (error) {
+      console.error(`Error executing batch file: ${error.message}`);
+      return res.status(500).send('Failed to cancel process');
+    }
+
+    if (stderr) {
+      console.error(`stderr: ${stderr}`);
+      return res.status(500).send('Error occurred while canceling process');
+    }
+
+    console.log(`stdout: ${stdout}`);
+    res.send('Process main.exe canceled');
+  });
 });
 
 export const listen = () => {
