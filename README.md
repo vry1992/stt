@@ -97,3 +97,19 @@ Nest is an MIT-licensed open source project. It can grow thanks to the sponsors 
 ## License
 
 Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+
+
+https://www.itworks.hu/running-whisper-cpp-on-windows/
+
+install cmake https://cmake.org/download/
+install visual studio and c++ env
+
+add env var ms build to PATH env vars
+like C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\MSBuild\Current\Bin (can be C:\Program Files\Microsoft Visual Studio\2022\BuildTools\MSBuild\Current\Bin)
+
+1. cd src/cpp
+2. git clone https://github.com/ggerganov/whisper.cpp.git
+3. cmake . --fresh -DGGML_CUDA=ON
+4. msbuild ALL_BUILD.vcxproj /p:Configuration=Release
+5. download model https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-large-v1.bin?download=true
+6. put the model to src/cpp/whisper.cpp/models

@@ -18,7 +18,7 @@ export class AppController {
       destination: './temp',
       filename: (req, file, callback) => {
         const filename = WavService.normalizeName(file.originalname);
-        file.originalname = filename
+        file.originalname = filename;
         callback(null, filename);
       },
     }),
