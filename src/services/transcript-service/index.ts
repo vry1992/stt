@@ -4,6 +4,7 @@ import { MODELS_PATH, MODELS } from '../transcript-service/constants';
 
 const DEFAULT_OPTIONS : OptionsType = {
     model: path.join(MODELS_PATH, MODELS.large_v1),
+    outputInJson: true,
     outputInText: false, // get output result in txt file
     outputInVtt: false, // get output result in vtt file
     outputInSrt: false, // get output result in srt file
@@ -12,7 +13,7 @@ const DEFAULT_OPTIONS : OptionsType = {
     language: 'ru', // source language
     wordTimestamps: false, // Word-level timestamps
     timestamps_length: 20, // amount of dialogue per timestamp pair
-    splitOnWord: true, //split on word rather than on token
+    splitOnWord: false, //split on word rather than on token
 }
 
 const transcript = (filePath: string, options = DEFAULT_OPTIONS) => {

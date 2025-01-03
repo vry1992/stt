@@ -1,13 +1,11 @@
-import path from "path";
-// import { MODELS_ENUM } from "../../enums";
-import { MODELS, MODELS_PATH, WHISPER_CLI_PATH } from "../constants";
-import { cd, ls, which, exec } from "shelljs";
-// import { eventEmitter } from "../../event-emitter";
+import { WHISPER_CLI_PATH } from "../constants";
+import { cd, exec } from "shelljs";
 
 
 export type OptionsType = {
     model: string,
-    outputInText: boolean, // get output result in txt file
+    outputInText: boolean, 
+    outputInJson: boolean,// get output result in txt file
     outputInVtt: boolean, // get output result in vtt file
     outputInSrt: boolean, // get output result in srt file
     outputInCsv: boolean, // get output result in csv file
@@ -19,14 +17,21 @@ export type OptionsType = {
 }
 
 export const createRunCommand = (filePath: string, options: OptionsType) => {
-    const base = `whisper-cli -pp -f ${filePath}`
+    const base = `whisper-cli -f ${filePath} -t 10`
 
     const commands = Object.entries(options).reduce((acc, [key, value]) => {
+        if (!value) return acc;
         switch(key) {
             case 'model': 
                 return [...acc, ` -m ${value}`];
             case 'language': 
                 return [...acc, ` -l ${value}`];
+            // case 'splitOnWord': 
+            //     return [...acc, ` -sow ${value}`];
+            // case 'outputInJson': 
+            //     return [...acc, ` -oj ${value}`]; 
+            // case 'wordTimestamps': 
+            //     return [...acc, ` -ml ${value ? value : 1}`];
             default:
                 return acc;
         }

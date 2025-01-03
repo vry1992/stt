@@ -63,7 +63,19 @@ const normalizeWavFile = (path: string) => {
     if (!wav.fmt) {
         throw new BadRequestException({error: 'The file is not wav format'})
     }
+    const samples = wav.getSamples();
+    fs.writeFileSync('./okok.txt', samples.join(','))
+    // console.log(samples.join(','), 'BEFORE')
     wav.toSampleRate(16000);
+    wav.toBitDepth('16', true);
+
+    const filteredSamples = samples.map((sample, index) => {
+      // Basic noise threshold
+      return Math.abs(sample) < 2 ? wav.setSample(index, 0) : wav.setSample(index, sample);
+    });
+
+    const samples2 = wav.getSamples();
+    console.log(samples2, 'AFTER')
     FileService.writeFileSync(path, wav.toBuffer())
 }
 

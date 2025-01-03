@@ -3,10 +3,13 @@ import { AppService } from './app.service';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { WavService } from './services/wav-service';
+import * as path from 'path';
 
 @Controller()
 export class AppController {
-  constructor(private readonly appService: AppService) {}
+  constructor(private readonly appService: AppService) {
+    console.log(__dirname)
+  }
 
   @Post('transcribe')
   @UseInterceptors(FileFieldsInterceptor(
@@ -15,7 +18,7 @@ export class AppController {
   ],
   {
     storage: diskStorage({
-      destination: './temp',
+      destination: path.join(__dirname, '../../temp'),
       filename: (req, file, callback) => {
         const filename = WavService.normalizeName(file.originalname);
         file.originalname = filename;
@@ -24,7 +27,7 @@ export class AppController {
     }),
   }
 ))
-  transcribe(@UploadedFiles() files: { audio?: Express.Multer.File[] }): string {
+  transcribe(@UploadedFiles() files: { audio?: Express.Multer.File[] }) {
     return this.appService.transcribe(files);
   }
 }
