@@ -21,43 +21,35 @@ const padWithSilence = (samples: Int16Array, targetLength: number): Int16Array =
 
 const joinChannels = (path1: string, path2: string, newName: string) => {
 
-    // Read and parse the mono WAV files
     const wav1 = getWavFile(path1);
     const wav2 = getWavFile(path2);
 
-    // Ensure both WAV files have the same sample rate and bit depth
     if (wav1.fmt.sampleRate !== wav2.fmt.sampleRate || wav1.fmt.bitsPerSample !== wav2.fmt.bitsPerSample) {
         throw new Error('WAV files must have the same sample rate and bit depth');
     }
 
-    // Get samples from both WAV files
     const wav1Samples = wav1.getSamples(true, Int16Array);
     const wav2Samples = wav2.getSamples(true, Int16Array);
 
-    // Determine the longer duration
     const maxLength = Math.max(wav1Samples.length, wav2Samples.length);
 
-    // Pad the shorter file with silence
     const paddedWav1Samples =
         wav1Samples.length < maxLength ? padWithSilence(wav1Samples, maxLength) : wav1Samples;
 
     const paddedWav2Samples =
         wav2Samples.length < maxLength ? padWithSilence(wav2Samples, maxLength) : wav2Samples;
 
-    // Combine the samples into stereo
     const stereoSamples: number[] = [];
     for (let i = 0; i < maxLength; i++) {
         stereoSamples.push(paddedWav1Samples[i], paddedWav2Samples[i]);
     }
 
-    // Set the stereo parameters in wav1
     wav1.fmt.numChannels = 2;
     wav1.fmt.byteRate *= 2;
     wav1.fmt.blockAlign *= 2;
     wav1.data.chunkSize = stereoSamples.length * (wav1.fmt.bitsPerSample / 8);
     wav1.data.samples = new Uint8Array(new Int16Array(stereoSamples).buffer);
 
-    // Save the combined WAV file
     const combinedBuffer = wav1.toBuffer();
     FileService.writeFileSync(path.join(__dirname, `../../../../temp/${newName}`), combinedBuffer);
 
